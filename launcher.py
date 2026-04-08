@@ -41,6 +41,9 @@ def esperar_y_abrir():
     webbrowser.open(URL)
 
 if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.freeze_support()
+    
     print("🚀 Iniciando CNC Fault Detector...")
     threading.Thread(target=iniciar_backend, daemon=True).start()
     esperar_y_abrir()
