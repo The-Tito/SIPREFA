@@ -35,6 +35,7 @@ comando = [
     # Solo hidden imports que PyInstaller suele fallar con uvicorn y pywt
     "--hidden-import", "pywt",
     "--hidden-import", "websockets",     # Necesario para el servidor WebSocket
+    "--hidden-import", "uvicorn",
     "--hidden-import", "uvicorn.logging",
     "--hidden-import", "uvicorn.loops",
     "--hidden-import", "uvicorn.loops.auto",
