@@ -15,9 +15,7 @@ except Exception as e:
     sys.exit(1)
 
 # 2. Configuración de PyInstaller
-# En Windows genera un archivo único .exe (--onefile)
-# En Mac genera una carpeta .app (--onedir) por compatibilidad
-dist_mode = "--onefile" if sys.platform == "win32" else "--onedir"
+dist_mode = "--onedir"
 
 # El separador de rutas en PyInstaller cambia según el SO
 # Windows usa ';' y Mac/Linux usa ':'
