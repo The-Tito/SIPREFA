@@ -1,0 +1,30 @@
+# Python
+backend/venv/
+backend/env/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+backend/.env
+
+# Node / Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*
+
+# PyInstaller / Build
+build/
+dist/
+*.spec
+CNC_FaultDetector.app/
+
+# IDEs / System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.tsbuildinfo
+frontend/next-env.d.ts

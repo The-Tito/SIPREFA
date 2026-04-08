@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pyserial
+numpy
+PyWavelets
+python-dotenv
+matplotlib
