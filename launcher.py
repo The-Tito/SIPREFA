@@ -16,11 +16,16 @@ import uvicorn
 
 def iniciar_backend():
     backend_path = resource_path("backend")
-    # Añadir el path del backend para que uvicorn pueda importar 'main'
+    # Añadir el path del backend para que el import 'main' funcione
     if backend_path not in sys.path:
         sys.path.insert(0, backend_path)
     
-    uvicorn.run("main:app", host="0.0.0.0", port=PORT, log_level="error")
+    try:
+        from main import app
+        uvicorn.run(app, host="0.0.0.0", port=PORT, log_level="error")
+    except Exception as e:
+        print(f"❌ Error al importar backend: {e}")
+        input("Presiona Enter para cerrar...")
 
 def esperar_y_abrir():
     """Espera que el servidor esté listo antes de abrir el browser"""
