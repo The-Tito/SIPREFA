@@ -5,6 +5,7 @@ from collections import deque
 WINDOW_SIZE = 512
 THRESHOLD_FACTOR = 3
 
+
 class SensorProcessor:
     def __init__(self, sensor_id: int):
         self.id = sensor_id
@@ -23,18 +24,17 @@ class SensorProcessor:
         self.buffers['y'].append(y)
         self.buffers['z'].append(z)
 
-    def process(self) -> dict:
+    def process(self):
         if len(self.buffers['x']) < WINDOW_SIZE:
             return None
 
         total_energy = 0
         for axis in ['x', 'y', 'z']:
             sig = np.array(self.buffers[axis])
-            sig -= np.mean(sig)
+            sig = sig - np.mean(sig)
             coeffs = pywt.wavedec(sig, 'db4', level=4)
             total_energy += np.sum(np.square(coeffs[-1]))
 
-        # Fase de baseline (primeras 30 ventanas)
         if not self.baseline_ready:
             self.baseline_energy.append(total_energy)
             if len(self.baseline_energy) >= 30:
@@ -47,8 +47,10 @@ class SensorProcessor:
                 "signal_x": list(self.buffers['x'])
             }
 
-        threshold = (np.mean(self.baseline_energy) +
-                     THRESHOLD_FACTOR * np.std(self.baseline_energy))
+        threshold = (
+            np.mean(self.baseline_energy)
+            + THRESHOLD_FACTOR * np.std(self.baseline_energy)
+        )
         fault = bool(total_energy > threshold)
 
         if fault:

@@ -24,7 +24,7 @@ sep = os.pathsep
 comando = [
     sys.executable, "-m", "PyInstaller",
     dist_mode,
-    "--windowed",
+    "--console",
     "--noconfirm",
     "--name", "CNC_FaultDetector",
     "--paths", "backend",                # Ayuda a resolver 'import main'

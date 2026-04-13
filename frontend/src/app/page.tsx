@@ -2,13 +2,24 @@
 import { useWebSocket } from "@/lib/useWebSocket";
 import ConnectionPanel from "@/components/ConnectionPanel";
 import SensorCard from "@/components/SensorCard";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Power } from "lucide-react";
 import FaultHistory from "@/components/FaultHistory";
 
 export default function Dashboard() {
   const { connected, error, sensorData, connect, disconnect } = useWebSocket();
 
   const totalFaults = Object.values(sensorData).filter((s) => s.fault).length;
+
+  const handleShutdown = async () => {
+    if (confirm("¿Estás seguro de que deseas apagar la aplicación?")) {
+      try {
+        await fetch("http://localhost:8000/shutdown", { method: "POST" });
+        window.close(); // Intenta cerrar la pestaña web
+      } catch (e) {
+        console.log("Aplicación cerrada", e);
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -24,11 +35,21 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <ConnectionPanel
-            connected={connected}
-            onConnect={connect}
-            onDisconnect={disconnect}
-          />
+          <div className="flex items-center gap-3">
+            <ConnectionPanel
+              connected={connected}
+              onConnect={connect}
+              onDisconnect={disconnect}
+            />
+            <button
+              onClick={handleShutdown}
+              className="flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 border border-red-200 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+              title="Apagar y cerrar servidor"
+            >
+              <Power size={18} />
+              Apagar
+            </button>
+          </div>
         </div>
       </header>
 
@@ -54,9 +75,13 @@ export default function Dashboard() {
 
         {/* Grid de sensores */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {[1, 2, 3].map((id) => (
-            <SensorCard key={id} id={id} data={sensorData[id]} />
-          ))}
+          {Object.keys(sensorData).length > 0
+            ? Object.values(sensorData).map((data) => (
+                <SensorCard key={data.sensor_id} id={data.sensor_id} data={data} />
+              ))
+            : [1, 2, 3].map((id) => (
+                <SensorCard key={id} id={id} data={undefined} />
+              ))}
         </div>
         <FaultHistory />
 

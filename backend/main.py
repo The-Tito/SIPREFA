@@ -96,6 +96,18 @@ def limpiar_fallas():
     return {"status": "cleared"}
 
 
+# ── Endpoint: Apagar el servidor completamente ────────────────
+@app.post("/shutdown")
+def apagar_servidor():
+    import threading
+    def auto_kill():
+        import time
+        time.sleep(1)
+        os._exit(0)
+    threading.Thread(target=auto_kill).start()
+    return {"status": "apagando"}
+
+
 # ── WebSocket principal ──────────────────────────────────────
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -123,13 +135,19 @@ async def websocket_endpoint(websocket: WebSocket):
             line = line.decode("utf-8", errors="ignore").strip()
             data = line.split(",")
 
-            if len(data) == 9:   # 3 sensores × 3 ejes
+            if len(data) > 0 and len(data) % 3 == 0:
                 try:
                     nums = [float(v) for v in data]
+                    num_sensors_received = len(nums) // 3
                     timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
+                    # Asegurar que tenemos suficientes objetos SensorProcessor (dinámico)
+                    while len(sensores) < num_sensors_received:
+                        sensores.append(SensorProcessor(len(sensores) + 1))
+
                     results = []
-                    for i, sensor in enumerate(sensores):
+                    for i in range(num_sensors_received):
+                        sensor = sensores[i]
                         sensor.add_data(nums[i*3], nums[i*3+1], nums[i*3+2])
                         result = sensor.process()
                         if result:

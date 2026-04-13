@@ -28,16 +28,17 @@ def iniciar_backend():
         input("Presiona Enter para cerrar...")
 
 def esperar_y_abrir():
-    """Espera que el servidor esté listo antes de abrir el browser"""
     import urllib.request
-    for _ in range(20):  # Intenta 20 veces (10 segundos)
+    print("Esperando que el servidor levante...")
+    for intento in range(60):        # ← 60 intentos = 30 segundos de espera
         try:
-            urllib.request.urlopen(f"{URL}/ports")
+            urllib.request.urlopen(f"{URL}/ports", timeout=2)
+            print(f"Servidor listo en intento {intento + 1}")
             webbrowser.open(URL)
             return
         except Exception:
             time.sleep(0.5)
-    # Si no levantó, abre de todos modos
+    # Si llegó aquí, algo falló — abrir de todos modos
     webbrowser.open(URL)
 
 if __name__ == "__main__":
