@@ -6,10 +6,13 @@ export type SensorData = {
   energy: number;
   energy_history: number[];
   fault: boolean;
+  fault_active: boolean;
   baseline_ready: boolean;
   threshold: number;
+  threshold_mode: "manual" | "auto";
   signal_x: number[];
   total_faults: number;
+  cooldown_remaining: number;
   fault_snapshot?: { id: number; timestamp: string };
   timestamp: string;
 };

@@ -10,5 +10,6 @@ const WS_BASE = API_BASE.replace(/^http/, "ws");
 export const API_URLS = {
   ports: `${API_BASE}/ports`,
   faults: `${API_BASE}/faults`,
+  config: `${API_BASE}/config`,
   ws: `${WS_BASE}/ws`,
 } as const;

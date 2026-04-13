@@ -1,5 +1,5 @@
 "use client";
-import { AlertTriangle, CheckCircle, Loader } from "lucide-react";
+import { AlertTriangle, CheckCircle, Loader, Clock } from "lucide-react";
 import { SensorData } from "@/lib/useWebSocket";
 import SignalChart from "./SignalChart";
 import EnergyChart from "./EnergyChart";
@@ -22,13 +22,16 @@ export default function SensorCard({
     );
   }
 
-  const isFault = data.fault;
+  // fault_active = actualmente sobre umbral (visual rojo)
+  // fault       = nueva captura disparada en este ciclo
+  const isFaultActive = data.fault_active ?? data.fault;
   const isCalibrating = !data.baseline_ready;
+  const cooldownRemaining = data.cooldown_remaining ?? 0;
 
   return (
     <div
       className={`border rounded-2xl p-5 shadow-sm transition-all ${
-        isFault ? "border-red-300 bg-red-50" : "border-gray-200 bg-white"
+        isFaultActive ? "border-red-300 bg-red-50" : "border-gray-200 bg-white"
       }`}
     >
       {/* Header */}
@@ -46,7 +49,7 @@ export default function SensorCard({
 
         <div className="flex items-center gap-3">
           <span className="text-xs text-gray-400">{data.timestamp}</span>
-          {isFault ? (
+          {isFaultActive ? (
             <span className="flex items-center gap-1 text-red-600 text-sm font-medium">
               <AlertTriangle size={16} /> FALLA
             </span>
@@ -57,6 +60,16 @@ export default function SensorCard({
           )}
         </div>
       </div>
+
+      {/* Cooldown indicator — solo aparece cuando el sensor está en falla pero en cooldown */}
+      {isFaultActive && cooldownRemaining > 0 && (
+        <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5 mb-3">
+          <Clock size={13} />
+          <span>
+            Próxima captura en <strong>{cooldownRemaining}s</strong> (cooldown activo)
+          </span>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 mb-4">
@@ -71,6 +84,11 @@ export default function SensorCard({
           <p className="text-sm font-semibold tabular-nums">
             {data.threshold ? data.threshold.toFixed(2) : "—"}
           </p>
+          {data.threshold_mode === "manual" && (
+            <span className="text-[10px] bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded-full font-medium">
+              manual
+            </span>
+          )}
         </div>
         <div className="bg-gray-50 rounded-lg px-3 py-2 text-center">
           <p className="text-xs text-gray-400 mb-0.5">Fallas totales</p>
@@ -95,7 +113,7 @@ export default function SensorCard({
         <EnergyChart
           data={data.energy_history ?? []}
           threshold={data.threshold ?? 0}
-          fault={isFault}
+          fault={isFaultActive}
         />
       </div>
     </div>

@@ -4,17 +4,19 @@ import ConnectionPanel from "@/components/ConnectionPanel";
 import SensorCard from "@/components/SensorCard";
 import { AlertTriangle, Power } from "lucide-react";
 import FaultHistory from "@/components/FaultHistory";
+import ConfigPanel from "@/components/ConfigPanel";
 
 export default function Dashboard() {
   const { connected, error, sensorData, connect, disconnect } = useWebSocket();
 
-  const totalFaults = Object.values(sensorData).filter((s) => s.fault).length;
+  // fault_active = sensor actualmente sobre el umbral (no necesariamente captura nueva)
+  const activeFaults = Object.values(sensorData).filter((s) => s.fault_active).length;
 
   const handleShutdown = async () => {
     if (confirm("¿Estás seguro de que deseas apagar la aplicación?")) {
       try {
         await fetch("http://localhost:8000/shutdown", { method: "POST" });
-        window.close(); // Intenta cerrar la pestaña web
+        window.close();
       } catch (e) {
         console.log("Aplicación cerrada", e);
       }
@@ -54,14 +56,13 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-6 space-y-6">
-        {/* Alerta global de falla */}
-        {totalFaults > 0 && (
+        {/* Alerta global de falla activa */}
+        {activeFaults > 0 && (
           <div className="flex items-center gap-3 bg-red-600 text-white px-5 py-3 rounded-xl shadow-md animate-pulse">
             <AlertTriangle size={20} />
             <span className="font-semibold">
-              ⚠️ {totalFaults} sensor{totalFaults > 1 ? "es" : ""} fuera de
-              rango detectado
-              {totalFaults > 1 ? "s" : ""}
+              ⚠️ {activeFaults} sensor{activeFaults > 1 ? "es" : ""} fuera de
+              rango detectado{activeFaults > 1 ? "s" : ""}
             </span>
           </div>
         )}
@@ -73,6 +74,9 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Panel de configuración */}
+        <ConfigPanel />
+
         {/* Grid de sensores */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {Object.keys(sensorData).length > 0
@@ -83,6 +87,7 @@ export default function Dashboard() {
                 <SensorCard key={id} id={id} data={undefined} />
               ))}
         </div>
+
         <FaultHistory />
 
         {/* Estado inicial */}

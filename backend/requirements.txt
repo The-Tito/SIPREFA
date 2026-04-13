@@ -6,3 +6,4 @@ PyWavelets
 python-dotenv
 matplotlib
 websockets
+scipy
