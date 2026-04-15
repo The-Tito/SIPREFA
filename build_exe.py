@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import subprocess
 import sys
 import os
 
 # 1. Build del frontend (Next.js)
-print("📦 Generando export estático del frontend...")
+print("[BUILD] Generando export estatico del frontend...")
 npm_cmd = "npm run build"
 try:
     if sys.platform == "win32":
@@ -14,10 +15,10 @@ except Exception as e:
     print(f"Error al compilar el frontend: {e}")
     sys.exit(1)
 
-# 2. Configuración de PyInstaller
+# 2. Configuracion de PyInstaller
 dist_mode = "--onedir"
 
-# El separador de rutas en PyInstaller cambia según el SO
+# El separador de rutas en PyInstaller cambia segun el SO
 # Windows usa ';' y Mac/Linux usa ':'
 sep = os.pathsep
 
@@ -39,6 +40,6 @@ comando = [
     "launcher.py",
 ]
 
-print(f"\nIniciando construcción del binario ({dist_mode})...")
+print(f"\n[BUILD] Iniciando construccion del binario ({dist_mode})...")
 subprocess.run(comando, check=True)
-print(f"\nProceso completado. Busca el resultado en la carpeta 'dist/'")
+print(f"\n[BUILD] Proceso completado. Busca el resultado en la carpeta 'dist/'")

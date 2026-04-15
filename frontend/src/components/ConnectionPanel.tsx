@@ -40,7 +40,7 @@ export default function ConnectionPanel({
         value={selected}
         onChange={(e) => setSelected(e.target.value)}
         disabled={connected}
-        className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 disabled:opacity-50"
+        className="text-sm text-gray-900 border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 disabled:opacity-50 disabled:text-gray-500"
       >
         <option value="">Seleccionar puerto...</option>
         {ports.map((p) => (

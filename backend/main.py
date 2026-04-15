@@ -252,7 +252,12 @@ async def websocket_endpoint(websocket: WebSocket):
 
 # ── Servir frontend estático ─────────────────────────────────
 def resource_path(relative: str) -> str:
-    base = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    if hasattr(sys, '_MEIPASS'):
+        # Dentro del .exe: _MEIPASS es la carpeta _internal/
+        base = sys._MEIPASS
+    else:
+        # En desarrollo: subir dos niveles desde backend/main.py -> raiz del proyecto
+        base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base, relative)
 
 static_dir = resource_path("static")
